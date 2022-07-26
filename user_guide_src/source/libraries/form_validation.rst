@@ -45,7 +45,7 @@ and tedious to implement.
 Form Validation Tutorial
 ************************
 
-What follows is a "hands on" tutorial for implementing CodeIgniters Form
+What follows is a "hands on" tutorial for implementing CodeIgniter's Form
 Validation.
 
 In order to implement form validation you'll need three things:
@@ -65,7 +65,7 @@ The Form
 Using a text editor, create a form called myform.php. In it, place this
 code and save it to your application/views/ folder::
 
-	<html>
+	<html lang="en">
 	<head>
 	<title>My Form</title>
 	</head>
@@ -100,7 +100,7 @@ The Success Page
 Using a text editor, create a form called formsuccess.php. In it, place
 this code and save it to your application/views/ folder::
 
-	<html>
+	<html lang="en">
 	<head>
 	<title>My Form</title>
 	</head>
@@ -359,7 +359,7 @@ function calls!**
 
 ::
 
-	<html>
+	<html lang="en">
 	<head>
 	<title>My Form</title>
 	</head>

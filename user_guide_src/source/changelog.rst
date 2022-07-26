@@ -16,6 +16,8 @@ Release Date: Not Released
 
 -  Core
 
+   -  Added a ``$config['log_file']`` option.
+   -  Removed ``$config['log_file_extension']``.
    -  Removed ``$config['rewrite_short_tags']`` (irrelevant on PHP 5.4+).
    -  Removed previously deprecated ``$config['global_xss_filtering']``.
    -  Removed previously deprecated :doc:`Routing Class <general/routing>` methods ``fetch_directory()``, ``fetch_class()`` and ``fetch_method()`` (use the respective class properties instead).
@@ -35,9 +37,11 @@ Release Date: Not Released
 
 -  Libraries
 
+   -  Removed previously deprecated *Encrypt Library*.
    -  Removed previously deprecated *Cart Library*.
    -  Removed previously deprecated *Javascript Library* (it was always experimental in the first place).
-   -  Added UNIX socket connection support to :doc:`Session Library <libraries/sessions>` 'redis' driver.
+   -  Removed previously deprecated ``anchor_class`` option from :doc:`Pagination Library <libraries/pagination>`.
+   -  Added TLS and UNIX socket connection support to :doc:`Session Library <libraries/sessions>` 'redis' driver.
    -  Updated :doc:`ZIP Library <libraries/zip>` method ``read_dir()`` to include hidden (dot-prefixed) files.
 
    -  :doc:`Cache Library <libraries/caching>` changes include:
@@ -53,6 +57,7 @@ Release Date: Not Released
    -  :doc:`Form Validation Library <libraries/form_validation>` changes include:
 
       - Removed previously deprecated method ``prep_for_form()`` / rule *prep_for_form*.
+      - Removed previously deprecated ability to use language translations without the ``'form_validation_'`` prefix.
       - Changed method ``set_rules()`` to throw a ``BadMethodCallException`` when its first parameter is not an array and the ``$rules`` one is unused.
       - Added rule **valid_mac**, which replicates PHP's native ``filter_var()`` with ``FILTER_VALIDATE_MAC``.
       - Added ability to validate entire arrays at once, if ``is_array`` is within the list of rules.
@@ -72,9 +77,12 @@ Release Date: Not Released
 
       - Added option to change the output filename via the ``new_name`` option when rendering images with ``dynamic_output``.
       - Updated to serve multibyte filenames when rendering images with ``dynamic_output``, if possible.
+      - Added WebP image support.
 
 -  :doc:`Database <database/index>` changes include:
 
+   -  Removed the option to disable the :doc:`Query Builder <database/query_builder>`.
+   -  Removed driver-specific ``$curs_id`` property and ``get_cursor()``, ``stored_procedure()`` methods from OCI8 driver.
    -  Removed previously deprecated 'sqlite' driver (used for SQLite version 2; no longer shipped with PHP 5.4+).
    -  Removed method ``db_set_charset()`` and the ability to change a connection character set at runtime.
    -  Changed method ``initialize()`` to return void and instead throw a ``RuntimeException`` in case of failure.
@@ -83,10 +91,12 @@ Release Date: Not Released
    -  :doc:`Database Forge <database/forge>`:
 
       - Added support for declaring date/time type fields default values as ``CURRENT_TIMESTAMP`` and similar.
+      - Removed previously deprecated ``$_after`` parameter for ``add_column()``.
 
    -  :doc:`Query Builder <database/query_builder>`:
 
       - Added methods ``having_in()``, ``or_having_in()``, ``not_having_in()``, ``or_not_having_in()``.
+      - Updated methods ``where_in()``, ``or_where_in()``, ``not_where_in()``, ``or_not_where_in()`` to reject non-array inputs for the second parameter.
       - Updated method ``join()`` to allow accepting ``NATURAL`` clauses in its third parameter.
       - Updated logic to allow dots in alias names.
 
@@ -95,8 +105,10 @@ Release Date: Not Released
    -  Removed previously deprecated *Email Helper* (had only two functions, aliases for PHP's native ``filter_var()`` and ``mail()``).
    -  Removed previously deprecated *Smiley Helper*.
    -  Removed previously deprecated :doc:`Date Helper <helpers/date_helper>` function ``standard_date()`` (use PHP's native ``date()`` instead).
+   -  Removed previously deprecated :doc:`Date Helper <helpers/date_helper>` function ``nice_date()`` (use PHP's native ``DateTime::format()`` instead).
    -  Removed previously deprecated :doc:`Security Helper <helpers/security_helper>` function ``do_hash()`` (use PHP's native ``hash()`` instead).
    -  Removed previously deprecated :doc:`File Helper <helpers/file_helper>` function ``read_file()`` (use PHP's native ``file_get_contents()`` instead).
+   -  Removed previously deprecated options ``'dash'`` and ``'underscore'`` from :doc:`URL Helper <helpers/url_helper>` function :php:func:`url_title()`.
    -  Added new function :php:func:`ordinal_format()` to :doc:`Inflector Helper <helpers/inflector_helper>`.
 
    -  :doc:`Download Helper <helpers/download_helper>` changes include:
@@ -109,6 +121,7 @@ Release Date: Not Released
 
       - Removed previously deprecated function ``trim_slashes()`` (use PHP's native ``trim()`` with ``'/'`` instead).
       - Removed previously deprecated function ``repeater()`` (use PHP's native ``str_repeat()`` instead).
+      - Removed previously deprecated ``'unique'`` and ``'encrypt'`` options from ``random_string()``.
 
    -  :doc:`HTML Helper <helpers/html_helper>` changes include:
 
@@ -125,16 +138,119 @@ Release Date: Not Released
    -  :doc:`CAPTCHA Helper <helpers/captcha_helper>` changes include:
 
       - Added 'img_alt' option with a default value of 'captcha'.
+      - Added 'img_class' option.
       - Added ability to generate ``data:image/png;base64`` URIs instead of writing image files to disk.
       - Updated to always create PNG images instead of JPEG.
+      - Removed previously deprecated usage with ``$img_path``, ``$img_url``, ``$font_path`` as extra parameters instead of array options.
+
+Bug fixes for 3.2.0
+===================
+
+-  Fixed a bug (#5562) - :doc:`Cache Library <libraries/caching>` 'redis' driver would pointlessly attempt to perform its functions if a connection to the Redis server failed.
+-  Fixed a bug (#92) - :doc:`File Helper <helpers/file_helper>` function :php:func:`get_dir_file_info()` output could have colliding array keys.
+
+Version 3.1.13
+==============
+
+Release Date: Mar 3, 2022
+
+Bug fixes for 3.1.13
+====================
+
+-  Fixed a bug (#6107) - :doc:`Session Library <libraries/sessions>` broke for PHP 5 due to a misnamed polyfill interface.
+
+Version 3.1.12
+==============
+
+Release Date: Mar 3, 2022
+
+- **Security**
+
+   -  Fixed a possible session fixation vulnerability where ``session.use_strict_mode`` wasn't enforced on PHP 7+.
+
+-  General Changes
+
+   -  Improved logging of error conditions in :doc:`CAPTCHA Helper <helpers/captcha_helper>` function :php:func:`create_captcha()`.
+   -  Added ``AUTO_INCREMENT`` support for Oracle 12.1+ to :doc:`Database Forge <database/forge>`.
+   -  Added ``FULL [OUTER] JOIN`` support to :doc:`Query Builder <database/query_builder>`.
+   -  Added support for detecting WebP image type to :doc:`File Uploading Library <libraries/file_uploading>`.
+   -  Added method :doc:`Database Library <database/index>` method ``trans_active()`` to expose transaction state.
+   -  Updated :doc:`Database Library <database/index>` 'pdo' driver to attempt to free resources in order to allow connections to be closed.
+   -  Added ``SameSite=Strict`` attribute to the CSRF cookie sent by the :doc:`Security Class <libraries/security>`.
+   -  Added ``$config['cookie_samesite']`` option and ``$samesite`` parameter to :doc:`Input Library <libraries/input>` method ``set_cookie()``.
+   -  Added ``SameSite`` support through ``$config['sess_samesite']`` option to the :doc:`Session Library <libraries/sessions>`.
+   -  Added a wrapper class around :doc:`Session <libraries/sessions>` drivers to deal with compatibility between PHP 8.1 and older versions.
+   -  Updated a lot of code for PHP 8.0 and 8.1 compatibility.
+
+Bug fixes for 3.1.12
+====================
+
+-  Fixed a bug (#5834) - :doc:`Query Builder <database/query_builder>` method ``count_all_results()`` triggered an SQL error for queries with a ``HAVING`` clause.
+-  Fixed a bug (#5840) - :doc:`Cache Library <libraries/caching>` 'redis' driver triggered an ``E_DEPRECATED`` warning about ``sRemove()`` with phpRedis 5.
+-  Fixed a bug (#5857) - :doc:`Session <libraries/sessions>` data could be corrupted after a concurrent request write with the 'files' driver due to a filesize cache being incorrect.
+-  Fixed a bug (#5861) - :doc:`Cache Library <libraries/caching>` 'redis' driver would always use phpRedis 5 ``del()`` due to an incorrect version check.
+-  Fixed a bug (#5879) - :doc:`Profiler Library <general/profiling>` triggered an ``E_DEPRECATED`` warning on PHP 7.4+.
+-  Fixed a bug (#5901) - :doc:`Database Library <database/index>` methods ``list_fields()`` and ``field_data()`` ignored the configured table schema on PostgreSQL.
+-  Fixed a bug (#5906) - :doc:`Database Library <database/index>` 'postgre' driver couldn't use the failover feature without a ``$config['dsn']``.
+-  Fixed a bug (#5903) - :doc:`common function <general/common_functions>` :php:func:`set_status_header()` didn't recognize 'HTTP/2.0' as a valid ``$_SERVER['SERVER_PROTOCOL']``.
+-  Fixed a bug (#6013) - :doc:`Session <libraries/sessions>` flashdata didn't work on PHP 8.
+-  Fixed a bug (#6006) - ``is_callable()`` change in PHP 8 broke :doc:`Migrations <libraries/migration>`, a part of :doc:`XML-RPC <libraries/xmlrpc>` and an edge case in 404 detection logic.
+-  Fixed a bug (#5729) - :doc:`Query Builder <database/query_builder>` possibly not detecting ``NOT BETWEEN`` expression.
+
+Version 3.1.11
+==============
+
+Release Date: Sep 19, 2019
+
+-  General Changes
+
+   -  Changed ``CI_Log`` to append ``PHP_EOL`` instead of ``\n`` at the end of log messages.
+   -  Improved performance in :doc:`Cache Library <libraries/caching>` 'redis' driver with non-scalar variables.
+   -  Altered the :doc:`Session Library <libraries/sessions>` 'files' driver to log error and trigger a session start failure instead of throwing an ``Exception`` in case of unusable ``$config['sess_save_path']``.
+   -  Updated the :doc:`Session <libraries/sessions>` and :doc:`Cache <libraries/caching>` libraries' 'redis' driver to work with phpRedis 5.
+
+Bug fixes for 3.1.11
+--------------------
+
+-  Fixed a bug (#5681) - :doc:`Database Forge <database/forge>` method ``modify_column()`` produced erroneous SQL for ``DEFAULT`` attribute changes under PostgreSQL, Firebird.
+-  Fixed a bug (#5692) - :doc:`Database Forge <database/forge>` didn't handle column nullability with the 'oci8', 'pdo/oci' drivers.
+-  Fixed a bug (#5701) - :doc:`Database <database/index>` driver 'pdo/pgsql' produced incorrect DSNs when constructing from a configuration array.
+-  Fixed a bug (#5708) - :doc:`Session Library <libraries/sessions>` 'redis' driver too often failed with locking-related errors that could've been avoided.
+-  Fixed a bug (#5703) - :doc:`Session Library <libraries/sessions>` triggered an ``E_WARNING`` message about changing ``session.save_path`` during an active session when it fails to obtain a lock.
+-  Fixed a bug where :doc:`Session Library <libraries/sessions>` 'database' driver didn't trigger a failure if it can't obtain a lock.
+-  Fixed a bug (#5755) - :doc:`Form Validation Library <libraries/form_validation>` rule **valid_url** accepted digit-only domains due to a PHP bug.
+-  Fixed a bug (#5753) - :doc:`Cache Library <libraries/caching>` 'redis' driver methods ``increment()``, ``decrement()`` ignored their ``$offset`` parameter.
+-  Fixed a bug (#5779) - :doc:`Session Library <libraries/sessions>` 'redis' only attempted to validate session IDs in case the connection to Redis failed.
+-  Fixed a bug (#5774) - :doc:`Database Results <database/results>` method ``custom_result_object()`` didn't properly handle empty result sets, triggering ``E_WARNING`` messages on PHP 7.2+.
+-  Fixed a bug (#5788) - :doc:`Database Results <database/results>` method ``field_data()`` triggered an ``E_NOTICE`` error with PDO when a field type is not recognized by PHP.
+-  Fixed a bug (#5796) - :doc:`Query Builder <database/query_builder>` method ``list_tables()`` triggered an SQL syntax error under MySQL when the database schema is a numeric string.
+-  Fixed a bug where :doc:`Security Class <libraries/security>` would trigger an ``E_WARNING`` if CSRF inputs are arrays instead of strings.
 
 Version 3.1.10
 ==============
+
+Release Date: Jan 16, 2019
+
+-  General Changes
+
+   -  Added 'ssl_verify' support to the 'pdo/mysql' :doc:`Database <database/index>` driver.
+   -  Renamed :doc:`Inflector Helper <helpers/inflector_helper>` function ``is_countable()`` to :php:func:`word_is_countable()` due to the former colliding with one introduced in PHP 7.3.0.
 
 Bug fixes for 3.1.10
 --------------------
 
 -  Fixed a bug (#5526) - :doc:`Session Library <libraries/sessions>` had a syntax error in its 'memcached' driver.
+-  Fixed a bug (#5542) - :doc:`Database Forge <database/forge>` method ``modify_column()`` always made fields ``NOT NULL`` when attempting to modify their nullable property under PostgreSQL.
+-  Fixed a bug (#5561) - :doc:`Database Library <database/index>` didn't allow SSL connection configuration with only the 'ssl_verify' option when using the 'mysqli' driver.
+-  Fixed a bug (#5545) - :doc:`Session Library <libraries/sessions>` crashed due to a caching-related error with the 'files' driver.
+-  Fixed a bug (#5571) - :doc:`XML-RPC Library <libraries/xmlrpc>` had a typo that triggered an ``E_WARNING`` message on PHP 7.2.
+-  Fixed a bug (#5587) - :doc:`Database Forge <database/forge>` method ``create_table()`` generated an ``E_WARNING`` message.
+-  Fixed a bug (#5590) - :doc:`Form Validation Library <libraries/form_validation>` rule **valid_base64** didn't have a default error message.
+-  Fixed a bug (#5624) - :doc:`Database Library <database/index>` methods ``list_fields()``, ``field_exists()`` returned incorrect results after tables are modified.
+-  Fixed a bug (#5627) - :doc:`Database <database/index>` driver 'mysqli' triggered an ``E_WARNING`` message if there's no ``'port'`` specified in the database configuration.
+-  Fixed a bug (#5651) - :doc:`Database Caching <database/caching>` could try to delete non-existent cache files due to a race condition.
+-  Fixed a bug (#5652) - :doc:`CAPTCHA Helper <helpers/captcha_helper>` function :php:func:`create_captcha()` didn't comply with CSS standards.
+-  Fixed a bug (#5605) - :doc:`Form Validation Library <libraries/form_validation>` didn't nullify array inputs that are expected to be strings.
 
 Version 3.1.9
 =============
@@ -269,10 +385,10 @@ Release Date: Mar 20, 2017
 -  **Security**
 
    -  Fixed a header injection vulnerability in :doc:`common function <general/common_functions>` :php:func:`set_status_header()` under Apache (thanks to Guillermo Caminer from `Flowgate <https://flowgate.net/>`_).
-   -  Fixed byte-safety issues in :doc:`Encrypt Library <libraries/encrypt>` (DEPRECATED) when ``mbstring.func_overload`` is enabled.
+   -  Fixed byte-safety issues in **Encrypt Library** (DEPRECATED) when ``mbstring.func_overload`` is enabled.
    -  Fixed byte-safety issues in :doc:`Encryption Library <libraries/encryption>` when ``mbstring.func_overload`` is enabled.
    -  Fixed byte-safety issues in :doc:`compatibility functions <general/compatibility_functions>` ``password_hash()``, ``hash_pbkdf2()`` when ``mbstring.func_overload`` is enabled.
-   -  Updated :doc:`Encrypt Library <libraries/encrypt>` (DEPRECATED) to call ``mcrypt_create_iv()`` with ``MCRYPT_DEV_URANDOM``.
+   -  Updated **Encrypt Library** (DEPRECATED) to call ``mcrypt_create_iv()`` with ``MCRYPT_DEV_URANDOM``.
 
 -  General Changes
 
@@ -315,7 +431,7 @@ Release Date: Jan 09, 2017
 
    -  Deprecated ``$config['allow_get_array']``.
    -  Deprecated ``$config['standardize_newlines']``.
-   -  Deprecated :doc:`Date Helper <helpers/date_helper>` function :php:func:`nice_date()`.
+   -  Deprecated :doc:`Date Helper <helpers/date_helper>` function ``nice_date()``.
 
 Bug fixes for 3.1.3
 -------------------
@@ -327,7 +443,7 @@ Bug fixes for 3.1.3
 -  Fixed a bug (#4902) - :doc:`Image Manipulation Library <libraries/image_lib>` processing via ImageMagick didn't work.
 -  Fixed a bug (#4905) - :doc:`Loader Library <libraries/loader>` didn't take into account possible user-provided directory paths when loading helpers.
 -  Fixed a bug (#4916) - :doc:`Session Library <libraries/sessions>` with ``sess_match_ip`` enabled was unusable for IPv6 clients when using the 'database' driver on MySQL 5.7.5+.
--  Fixed a bug (#4917) - :doc:`Date Helper <helpers/date_helper>` function :php:func:`nice_date()` didn't handle YYYYMMDD inputs properly.
+-  Fixed a bug (#4917) - :doc:`Date Helper <helpers/date_helper>` function ``nice_date()`` didn't handle YYYYMMDD inputs properly.
 -  Fixed a bug (#4923) - :doc:`Session Library <libraries/sessions>` could execute an erroneous SQL query with the 'database' driver, if the lock attempt times out.
 -  Fixed a bug (#4927) - :doc:`Output Library <libraries/output>` method ``get_header()`` returned the first matching header, regardless of whether it would be replaced by a second ``set_header()`` call.
 -  Fixed a bug (#4844) - :doc:`Email Library <libraries/email>` didn't apply ``escapeshellarg()`` to the while passing the Sendmail ``-f`` parameter through ``popen()``.
@@ -375,7 +491,7 @@ Release Date: Oct 22, 2016
 -  General Changes
 
    -  Added ``E_PARSE`` to the list of error levels detected by the shutdown handler.
-   -  Updated :doc:`Inflector Helper <helpers/inflector_helper>` :php:func:`is_countable()` with more words.
+   -  Updated :doc:`Inflector Helper <helpers/inflector_helper>` ``is_countable()`` with more words.
    -  Updated :doc:`common function <general/common_functions>` :php:func:`set_status_header()` with new status codes from IETF RFCs
       `2817 <https://tools.ietf.org/html/rfc2817>`_ (426)
       and `6585 <https://tools.ietf.org/html/rfc6585>`_ (428, 429, 431, 511).
@@ -980,9 +1096,9 @@ Release Date: March 30, 2015
 
 -  Libraries
 
-   -  Added a new :doc:`Encryption Library <libraries/encryption>` to replace the old, largely insecure :doc:`Encrypt Library <libraries/encrypt>`.
+   -  Added a new :doc:`Encryption Library <libraries/encryption>` to replace the old, largely insecure **Encrypt Library**.
 
-   -  :doc:`Encrypt Library <libraries/encrypt>` changes include:
+   -  **Encrypt Library** changes include:
 
       -  Deprecated the library in favor of the new :doc:`Encryption Library <libraries/encryption>`.
       -  Added support for hashing algorithms other than SHA1 and MD5.
@@ -1363,12 +1479,12 @@ Bug fixes for 3.0
 -  Fixed a bug (#1264) - :doc:`Database Forge <database/forge>` and :doc:`Database Utilities <database/utilities>` didn't update/reset the databases and tables list cache when a table or a database is created, dropped or renamed.
 -  Fixed a bug (#7) - :doc:`Query Builder <database/query_builder>` method ``join()`` only escaped one set of conditions.
 -  Fixed a bug (#1321) - ``CI_Exceptions`` couldn't find the *errors/* directory in some cases.
--  Fixed a bug (#1202) - :doc:`Encrypt Library <libraries/encrypt>` ``encode_from_legacy()`` didn't set back the encrypt mode on failure.
+-  Fixed a bug (#1202) - **Encrypt Library** ``encode_from_legacy()`` didn't set back the encrypt mode on failure.
 -  Fixed a bug (#145) - :doc:`Database Class <database/index>` method ``compile_binds()`` failed when the bind marker was present in a literal string within the query.
 -  Fixed a bug in :doc:`Query Builder <database/query_builder>` method ``protect_identifiers()`` where if passed along with the field names, operators got escaped as well.
 -  Fixed a bug (#10) - :doc:`URI Library <libraries/uri>` internal method ``_detect_uri()`` failed with paths containing a colon.
 -  Fixed a bug (#1387) - :doc:`Query Builder <database/query_builder>` method ``from()`` didn't escape table aliases.
--  Fixed a bug (#520) - :doc:`Date Helper <helpers/date_helper>` function :php:func:``nice_date()`` failed when the optional second parameter is not passed.
+-  Fixed a bug (#520) - :doc:`Date Helper <helpers/date_helper>` function ``nice_date()`` failed when the optional second parameter is not passed.
 -  Fixed a bug (#318) - :doc:`Profiling Library <general/profiling>` setting *query_toggle_count* was not settable as described in the manual.
 -  Fixed a bug (#938) - :doc:`Config Library <libraries/config>` method ``site_url()`` added a question mark to the URL string when query strings are enabled even if it already existed.
 -  Fixed a bug (#999) - :doc:`Config Library <libraries/config>` method ``site_url()`` always appended ``$config['url_suffix']`` to the end of the URL string, regardless of whether a query string exists in it.
@@ -1533,7 +1649,7 @@ Release Date: June 2, 2014
 
 -  General Changes
 
-   - Security: :doc:`Encrypt Library <libraries/encrypt>` method ``xor_encode()`` has been removed. The Encrypt Class now requires the Mcrypt extension to be installed.
+   - Security: **Encrypt Library** method ``xor_encode()`` has been removed. The Encrypt Class now requires the Mcrypt extension to be installed.
    - Security: The :doc:`Session Library <libraries/sessions>` now uses HMAC authentication instead of a simple MD5 checksum.
 
 Bug fixes for 2.2.0
@@ -2142,7 +2258,7 @@ Hg Tag: v2.0.0
    -  Documented append_output() in the :doc:`Output
       Class <libraries/output>`.
    -  Documented a second argument in the decode() function for the
-      :doc:`Encrypt Class <libraries/encrypt>`.
+      **Encrypt Class**.
    -  Documented db->close().
    -  Updated the router to support a default route with any number of
       segments.
